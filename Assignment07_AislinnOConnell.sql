@@ -283,11 +283,12 @@ go
 
 Create View vCategoryInventories
 AS
-	Select Distinct TOP 100000000
+	Select TOP 100000000
 		c.CategoryName,
 		-- DateName(mm, i.InventoryDate) + ', ' + DateName(yy, i.InventoryDate) as InventoryDate,
 		DateName(mm, i.InventoryDate) + ', ' + DateName(yy, i.InventoryDate) as InventoryDate,
-		Sum(i.Count) over(partition by c.CategoryName, i.InventoryDate) as InventoryCountByCategory 
+		--Sum(i.Count) over(partition by c.CategoryName, i.InventoryDate) as InventoryCountByCategory 
+		Sum(i.[Count]) as InventoryCountByCategory 
 	From
 		Categories as c
 	Inner Join
@@ -298,8 +299,10 @@ AS
 		Inventories as i
 	ON
 		i.ProductID = p.ProductID
+	Group By
+		c.CategoryName, i.InventoryDate
 	Order By
-		c.CategoryName, InventoryDate
+		c.CategoryName, i.InventoryDate
 		
 -- Check that it works: Select * From vCategoryInventories;
 go
